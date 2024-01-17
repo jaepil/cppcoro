@@ -145,13 +145,47 @@ if(WIN32)
     )
     list(APPEND sources ${win32Sources})
 
-    list(APPEND libraries Ws2_32 Mswsock Synchronization)
-    list(APPEND compile_options /EHsc)
+	list(APPEND libraries Ws2_32 Mswsock Synchronization)
+	if(MSVC)
+		list(APPEND compile_options /EHsc)
+	else()
+		list(APPEND compile_options -Wall)
+   	endif()
 
     if("${MSVC_VERSION}" VERSION_GREATER_EQUAL 1900)
       # TODO remove this when experimental/non-experimental include are fixed
       list(APPEND compile_definition _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING=1)
     endif()
+elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
+    set(linuxDetailIncludes
+        linux.hpp
+        linux_async_operation.hpp
+    )
+    list(TRANSFORM linuxDetailIncludes PREPEND "${PROJECT_SOURCE_DIR}/include/cppcoro/detail/")
+    list(APPEND detailIncludes ${linuxDetailIncludes})
+
+    set(linuxSources
+        linux.cpp
+        io_service.cpp
+        file.cpp
+        readable_file.cpp
+        writable_file.cpp
+        read_only_file.cpp
+        write_only_file.cpp
+        read_write_file.cpp
+        file_read_operation.cpp
+        file_write_operation.cpp
+        # socket_helpers.cpp
+        # socket.cpp
+        # socket_accept_operation.cpp
+        # socket_connect_operation.cpp
+        # socket_disconnect_operation.cpp
+        # socket_send_operation.cpp
+        # socket_send_to_operation.cpp
+        # socket_recv_operation.cpp
+        # socket_recv_from_operation.cpp
+    )
+    list(APPEND sources ${linuxSources})
 endif()
 
 add_library(cppcoro

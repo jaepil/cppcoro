@@ -261,7 +261,8 @@ TEST_CASE("exceptions thrown from nested call can be caught by caller")
 
 			try
 			{
-				co_yield f(4, f);
+				auto next_generator = f(4, f);
+				co_yield next_generator;
 			}
 			catch (SomeException)
 			{
@@ -276,7 +277,8 @@ TEST_CASE("exceptions thrown from nested call can be caught by caller")
 			bool caught = false;
 			try
 			{
-				co_yield f(3, f);
+				auto next_generator = f(3, f);
+				co_yield next_generator;
 			}
 			catch (SomeException)
 			{
@@ -291,8 +293,10 @@ TEST_CASE("exceptions thrown from nested call can be caught by caller")
 		else
 		{
 			co_yield 1;
-			co_yield f(2, f);
-			co_yield f(3, f);
+			auto next_generator = f(2, f);
+			co_yield next_generator;
+			auto next_generator2 = f(3, f);
+			co_yield next_generator2;
 		}
 	};
 

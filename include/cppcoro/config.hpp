@@ -78,6 +78,9 @@
 /// 0x0602 - Windows 8
 /// 0x0603 - Windows 8.1
 /// 0x0A00 - Windows 10
+#ifdef __MINGW32__
+#define SCOPEID_UNSPECIFIED_INIT {0}
+#endif
 #if defined(_WIN32_WINNT) || defined(_WIN32)
 # if !defined(_WIN32_WINNT)
 // Default to targeting Windows 10 if not defined.
@@ -156,7 +159,21 @@
     #ifdef __cpp_lib_coroutine
     #define CPPCORO_COROHEADER_FOUND_AND_USABLE
     #endif
-    #endif
+	#endif
+#elif CPPCORO_COMPILER_CLANG
+	# if __clang_major__ >= 14
+	    // clang 14 in c++-17 mode has a non-usable coroutine header
+		#if __has_include(<coroutine>)
+		#include <coroutine>
+		#ifdef __cpp_lib_coroutine
+		#define CPPCORO_COROHEADER_FOUND_AND_USABLE
+		#endif
+		#endif
+	# else
+		#if __has_include(<coroutine>)
+		#define CPPCORO_COROHEADER_FOUND_AND_USABLE
+		#endif
+	# endif
 #else
     #if __has_include(<coroutine>)
     #define CPPCORO_COROHEADER_FOUND_AND_USABLE

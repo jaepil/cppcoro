@@ -17,6 +17,7 @@
 #include <type_traits>
 #include <cstdint>
 #include <cassert>
+#include <new>
 
 #include <cppcoro/coroutine.hpp>
 
@@ -49,7 +50,7 @@ namespace cppcoro
 				// were crashing under x86 optimised builds.
 				template<typename PROMISE>
 				CPPCORO_NOINLINE
-				void await_suspend(cppcoro::coroutine_handle<PROMISE> coroutine)
+				void await_suspend(cppcoro::coroutine_handle<PROMISE> coroutine) noexcept
 				{
 					task_promise_base& promise = coroutine.promise();
 
